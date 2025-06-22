@@ -22,6 +22,7 @@ public class OrderWriter {
     public void writeOrdersToFile(List<Order> orders, Path outputPath) {
         try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardOpenOption.APPEND)){
             writer.write(addOrders(orders));
+            writer.newLine();
         } catch (IOException e) {
             e.printStackTrace();
         }
