@@ -1,32 +1,45 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
+@Table(name = "_Order")
 public class Order {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "order_id")
     private Long orderId;
-    private long customerId;
+
+    @ManyToOne
+    private Customer customer;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrderItem> orderItems;
+
     //the field price can be used later to add discounts, so it would differ from the sum of food prices
     private BigDecimal price;
+
     private LocalDateTime timestampCreated;
 
     public Order() {
     }
 
     public Order(Customer customer) {
-        this.customerId = customer.getId();
+        this.customer = customer;
         this.orderItems = customer.getCart().getOrderItems();
         this.price = customer.getCart().getPrice();
         this.timestampCreated = LocalDateTime.now();
         this.orderId = null;
     }
 
-    public Order(Long orderId, long customerId, List<OrderItem> orderItems, BigDecimal price, LocalDateTime timestampCreated) {
+    public Order(Long orderId, Customer customer, List<OrderItem> orderItems, BigDecimal price, LocalDateTime timestampCreated) {
         this.orderId = orderId;
-        this.customerId = customerId;
+        this.customer = customer;
         this.orderItems = orderItems;
         this.price = price;
         this.timestampCreated = timestampCreated;
@@ -40,12 +53,12 @@ public class Order {
         this.orderId = orderId;
     }
 
-    public long getCustomerId() {
-        return customerId;
+    public Customer getCustomer() {
+        return customer;
     }
 
-    public void setCustomerId(long customerId) {
-        this.customerId = customerId;
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
     }
 
     public List<OrderItem> getOrderItems() {
@@ -78,18 +91,18 @@ public class Order {
         if (o == null || getClass() != o.getClass())
             return false;
         Order order = (Order) o;
-        return customerId == order.customerId && Objects.equals(orderId, order.orderId) && Objects.equals(orderItems, order.orderItems)
+        return customer == order.customer && Objects.equals(orderId, order.orderId) && Objects.equals(orderItems, order.orderItems)
             && Objects.equals(price, order.price) && Objects.equals(timestampCreated, order.timestampCreated);
     }
 
     @Override public int hashCode() {
-        return Objects.hash(orderId, customerId, orderItems, price, timestampCreated);
+        return Objects.hash(orderId, customer, orderItems, price, timestampCreated);
     }
 
     @Override public String toString() {
         return "Order{" +
             "orderId=" + orderId +
-            ", customerId=" + customerId +
+            ", customerId=" + customer +
             ", items=" + orderItems +
             ", price=" + price +
             ", timestampCreated=" + timestampCreated +

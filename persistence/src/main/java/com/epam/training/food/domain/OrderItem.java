@@ -1,10 +1,20 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
 public class OrderItem {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name="order_Item_Id")
+    private Long id;
+
+    @OneToOne
     private Food food;
+
     private int pieces;
     //the field price can be used later to add discounts, so it would differ from (food x pieces)
     private BigDecimal price;

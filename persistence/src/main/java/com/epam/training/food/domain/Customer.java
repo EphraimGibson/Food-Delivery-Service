@@ -1,16 +1,27 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+@Entity
 public class Customer extends Credentials {
-    private final List<Order> orders = new ArrayList<>();
-    private long id;
+
+    @Id
+    @Column(name = "customer_Id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
     private String name;
     private BigDecimal balance;
+
+    @Transient
     private Cart cart;
+
+    @OneToMany (mappedBy = "customer", cascade = CascadeType.ALL)
+    private List<Order> orders = new ArrayList<>();
 
     public Customer() {
     }
@@ -46,11 +57,11 @@ public class Customer extends Credentials {
         return orders;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

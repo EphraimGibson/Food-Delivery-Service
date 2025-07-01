@@ -1,7 +1,9 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
+@MappedSuperclass
 public class Credentials {
     private String userName;
     private String password;

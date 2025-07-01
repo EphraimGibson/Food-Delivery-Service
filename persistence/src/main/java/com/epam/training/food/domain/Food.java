@@ -1,9 +1,17 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@Entity
 public class Food {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "Food_Id")
+    private Long id;
+
     private String name;
     private BigDecimal calorie;
     private String description;
