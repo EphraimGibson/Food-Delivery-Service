@@ -102,7 +102,7 @@ public class Order {
     @Override public String toString() {
         return "Order{" +
             "orderId=" + orderId +
-            ", customerId=" + customer +
+            ", customer=" + customer +
             ", items=" + orderItems +
             ", price=" + price +
             ", timestampCreated=" + timestampCreated +

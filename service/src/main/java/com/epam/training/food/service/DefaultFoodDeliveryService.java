@@ -3,8 +3,10 @@ package com.epam.training.food.service;
 import com.epam.training.food.aspect.EnableArgumentLogging;
 import com.epam.training.food.aspect.EnableExecutionTimeLogging;
 import com.epam.training.food.aspect.EnableReturnValueLogging;
-import com.epam.training.food.data.FileDataStore;
 import com.epam.training.food.domain.*;
+import com.epam.training.food.repository.CustomerRepository;
+import com.epam.training.food.repository.FoodRepository;
+import com.epam.training.food.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -13,12 +15,19 @@ import java.util.List;
 
 @Component
 public class DefaultFoodDeliveryService implements FoodDeliveryService {
-    private final FileDataStore data;
     private final ShoppingAssistant shoppingAssistant = new ShoppingAssistant();
 
-    @Autowired
-    public DefaultFoodDeliveryService(FileDataStore fileDataStore) {
-        this.data = fileDataStore;
+    private CustomerRepository customerRepository;
+
+    private FoodRepository foodRepository;
+
+    private OrderRepository orderRepository;
+
+
+    public DefaultFoodDeliveryService(CustomerRepository customerRepository, FoodRepository foodRepository, OrderRepository orderRepository) {
+        this.customerRepository = customerRepository;
+        this.foodRepository = foodRepository;
+        this.orderRepository = orderRepository;
     }
 
     @EnableArgumentLogging
@@ -26,18 +35,17 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
     @EnableExecutionTimeLogging
     @Override
     public Customer authenticate(Credentials credentials) throws AuthenticationException {
-        return data.getCustomers()
-                .stream()
-                .filter(customer -> credentials.getUserName().equals(customer.getUserName())
-                        && credentials.getPassword().equals(customer.getPassword()))
-                .findFirst()
-                .orElseThrow(() -> new AuthenticationException("invalid Credentials"));
+        String username = credentials.getUserName();
+        String password = credentials.getPassword();
+
+       return customerRepository.findCustomerByUserNameAndPassword(username, password)
+               .orElseThrow(() -> new AuthenticationException("invalid Credentials"));
     }
 
     @EnableReturnValueLogging
     @Override
     public List<Food> listAllFood() {
-        return data.getFoods();
+        return foodRepository.findAll();
     }
 
     @EnableArgumentLogging
@@ -56,10 +64,12 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
     @Override
     public Order createOrder(Customer customer) throws IllegalStateException {
         Order newOrder = customer.makeOrder();
-        data.createOrder(newOrder);
+        orderRepository.save(newOrder);
         return newOrder;
     }
 
-
+    public List<Order> getAllOrders() {
+        return orderRepository.findAll();
+    }
 }
 

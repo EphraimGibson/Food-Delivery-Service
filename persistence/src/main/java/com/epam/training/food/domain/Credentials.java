@@ -1,10 +1,12 @@
 package com.epam.training.food.domain;
 
+import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.util.Objects;
 
 @MappedSuperclass
 public class Credentials {
+    @Column(name= "user_name")
     private String userName;
     private String password;
 

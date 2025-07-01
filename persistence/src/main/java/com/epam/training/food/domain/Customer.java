@@ -10,7 +10,6 @@ import java.util.Objects;
 public class Customer extends Credentials {
 
     @Id
-    @Column(name = "customer_Id")
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
@@ -110,7 +109,6 @@ public class Customer extends Credentials {
             "id=" + id +
             ", name='" + name + '\'' +
             ", balance=" + balance +
-            ", orders=" + orders +
             ", cart=" + cart +
             '}';
     }

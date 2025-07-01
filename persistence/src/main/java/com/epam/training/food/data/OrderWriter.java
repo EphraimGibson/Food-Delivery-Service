@@ -36,7 +36,7 @@ public class OrderWriter {
                         order.getPrice(),
                         order.getTimestampCreated(),
                         order.getOrderId(),
-                        order.getCustomerId()
+                        order.getCustomer().getId()
                 ))
                 .collect(Collectors.joining("\n"));
     }

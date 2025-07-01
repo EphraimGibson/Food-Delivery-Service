@@ -1,9 +1,9 @@
 package com.epam.training.food;
 
-import com.epam.training.food.data.FileDataStore;
 import com.epam.training.food.data.OrderWriter;
 import com.epam.training.food.domain.Credentials;
 import com.epam.training.food.domain.Customer;
+import com.epam.training.food.repository.OrderRepository;
 import com.epam.training.food.service.LowBalanceException;
 import com.epam.training.food.domain.Order;
 import com.epam.training.food.service.AuthenticationException;
@@ -11,17 +11,17 @@ import com.epam.training.food.service.DefaultFoodDeliveryService;
 import com.epam.training.food.values.FoodSelection;
 import com.epam.training.food.view.CLIView;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.nio.file.Path;
 import java.util.Scanner;
 
 @Component
 public class Application implements CommandLineRunner {
     private DefaultFoodDeliveryService defaultFoodDeliveryService;
-    private FileDataStore fileDataStore;
     private final Scanner scanner = new Scanner(System.in);
+    private final OrderWriter writer = new OrderWriter();
     CLIView cliView;
     Customer customer;
 
@@ -31,7 +31,7 @@ public class Application implements CommandLineRunner {
 
         if (loginAndVerifyUser()){
             shoppingState();
-            fileDataStore.writeOrders();
+            writer.writeOrdersToFile(defaultFoodDeliveryService.getAllOrders(), Path.of("./orders"));
         }
         else{
             System.out.println("Authentication failed. Program terminating.");
@@ -43,10 +43,7 @@ public class Application implements CommandLineRunner {
         this.defaultFoodDeliveryService = defaultFoodDeliveryService;
     }
 
-    @Autowired
-    public void setFileDataStore(FileDataStore fileDataStore) {
-        this.fileDataStore = fileDataStore;
-    }
+
 
     private boolean loginAndVerifyUser() {
         Credentials credentials = cliView.readCredentials();
@@ -67,7 +64,7 @@ public class Application implements CommandLineRunner {
 
 
         while (userWantsToContinueShopping) {
-            cliView.printAllFoods(fileDataStore.getFoods());
+            cliView.printAllFoods(defaultFoodDeliveryService.listAllFood());
 
             FoodSelection foodSelection = cliView.readFoodSelection(defaultFoodDeliveryService.listAllFood());
 

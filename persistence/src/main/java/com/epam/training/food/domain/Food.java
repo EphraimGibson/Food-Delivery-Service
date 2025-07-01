@@ -9,7 +9,6 @@ public class Food {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "Food_Id")
     private Long id;
 
     private String name;
@@ -20,7 +19,8 @@ public class Food {
     public Food() {
     }
 
-    public Food(String name, BigDecimal calorie, String description, BigDecimal price) {
+    public Food(Long id ,String name, BigDecimal calorie, String description, BigDecimal price) {
+        this.id = id;
         this.name = name;
         this.calorie = calorie;
         this.description = description;
@@ -108,8 +108,8 @@ public class Food {
             return this;
         }
 
-        public Food build() {
-            return new Food(name, calorie, description, price);
-        }
+//        public Food build() {
+//            return new Food( id, name, calorie, description, price);
+//        }
     }
 }
