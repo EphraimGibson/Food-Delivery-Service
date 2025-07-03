@@ -62,16 +62,8 @@ public class Customer extends Credentials {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public BigDecimal getBalance() {
         return balance;
-    }
-
-    public void setBalance(BigDecimal balance) {
-        this.balance = balance;
     }
 
     public Cart getCart() {
@@ -91,7 +83,7 @@ public class Customer extends Credentials {
         if (!super.equals(o))
             return false;
         Customer customer = (Customer) o;
-        return id == customer.id && Objects.equals(name, customer.name) && Objects.equals(balance, customer.balance)
+        return Objects.equals(id, customer.id) && Objects.equals(name, customer.name) && Objects.equals(balance, customer.balance)
                 && Objects.equals(orders, customer.orders) && Objects.equals(cart, customer.cart);
     }
 

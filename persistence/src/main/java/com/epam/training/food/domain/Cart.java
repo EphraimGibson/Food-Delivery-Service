@@ -18,7 +18,6 @@ public class Cart {
         this.price = price;
     }
 
-    //this utility method is not part of the homework specification!
     public static Cart getEmptyCart() {
         return new Cart(new ArrayList<>(), BigDecimal.ZERO);
     }

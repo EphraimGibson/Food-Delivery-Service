@@ -7,20 +7,17 @@ import com.epam.training.food.domain.*;
 import com.epam.training.food.repository.CustomerRepository;
 import com.epam.training.food.repository.FoodRepository;
 import com.epam.training.food.repository.OrderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.epam.training.food.utility.ShoppingStateUtility;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class DefaultFoodDeliveryService implements FoodDeliveryService {
-    private final ShoppingAssistant shoppingAssistant;
+    private final ShoppingStateUtility shoppingAssistant;
     private final CustomerRepository customerRepository;
     private final FoodRepository foodRepository;
     private final OrderRepository orderRepository;
@@ -30,7 +27,7 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
         this.customerRepository = customerRepository;
         this.foodRepository = foodRepository;
         this.orderRepository = orderRepository;
-        shoppingAssistant = new ShoppingAssistant();
+        shoppingAssistant = new ShoppingStateUtility();
     }
 
     @EnableArgumentLogging
@@ -54,6 +51,7 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
     @EnableArgumentLogging
     @EnableExecutionTimeLogging
     @Override
+    @Transactional
     public void updateCart(Customer customer, Food food, int pieces) {
         if (pieces < 0) throw new IllegalArgumentException("Number of items can not be negative");
 
