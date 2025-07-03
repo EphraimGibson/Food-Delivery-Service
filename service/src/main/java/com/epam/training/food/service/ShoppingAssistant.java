@@ -1,5 +1,6 @@
 package com.epam.training.food.service;
 
+import com.epam.training.food.domain.Cart;
 import com.epam.training.food.domain.Customer;
 import com.epam.training.food.domain.OrderItem;
 
@@ -13,6 +14,8 @@ public class ShoppingAssistant {
     }
 
     public void updateItem(Customer customer, OrderItem item) {
+
+        if (customer.getCart() == null) customer.setCart(Cart.getEmptyCart());
 
         if (customer.getCart().getOrderItems().isEmpty() && item.getPieces() != 0){
             addItemAndAdjustBalance(customer, item);

@@ -10,24 +10,27 @@ import com.epam.training.food.repository.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class DefaultFoodDeliveryService implements FoodDeliveryService {
-    private final ShoppingAssistant shoppingAssistant = new ShoppingAssistant();
-
-    private CustomerRepository customerRepository;
-
-    private FoodRepository foodRepository;
-
-    private OrderRepository orderRepository;
+    private final ShoppingAssistant shoppingAssistant;
+    private final CustomerRepository customerRepository;
+    private final FoodRepository foodRepository;
+    private final OrderRepository orderRepository;
 
 
     public DefaultFoodDeliveryService(CustomerRepository customerRepository, FoodRepository foodRepository, OrderRepository orderRepository) {
         this.customerRepository = customerRepository;
         this.foodRepository = foodRepository;
         this.orderRepository = orderRepository;
+        shoppingAssistant = new ShoppingAssistant();
     }
 
     @EnableArgumentLogging
@@ -38,8 +41,8 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
         String username = credentials.getUserName();
         String password = credentials.getPassword();
 
-       return customerRepository.findCustomerByUserNameAndPassword(username, password)
-               .orElseThrow(() -> new AuthenticationException("invalid Credentials"));
+        return customerRepository.findCustomerByUserNameAndPassword(username, password)
+                .orElseThrow(() -> new AuthenticationException("invalid Credentials"));
     }
 
     @EnableReturnValueLogging
@@ -57,7 +60,7 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
         BigDecimal itemsTotal = food.getPrice().multiply(BigDecimal.valueOf(pieces));
         OrderItem item = new OrderItem(food, pieces, itemsTotal);
 
-        shoppingAssistant.updateItem(customer ,item);
+        shoppingAssistant.updateItem(customer, item);
         shoppingAssistant.updateTotalPriceOfOrderItemsInTheCart(customer);
     }
 
@@ -70,6 +73,17 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
 
     public List<Order> getAllOrders() {
         return orderRepository.findAll();
+    }
+
+    @Transactional
+    public List<OrderDTO> getALlOrdersDTO() {
+        return orderRepository.findAll().stream()
+                .map(order -> {
+                    List<OrderItemDTO> orderItemDTOList = order.getOrderItems().stream()
+                            .map(item -> new OrderItemDTO(item.getFood().getId(), item.getFood().getName(), item.getPieces(), item.getPrice()))
+                            .collect(Collectors.toList());
+                    return new OrderDTO(order.getOrderId(), order.getCustomer().getId(), orderItemDTOList, order.getPrice(), order.getTimestampCreated());
+                }).collect(Collectors.toList());
     }
 }
 

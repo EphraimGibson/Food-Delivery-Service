@@ -19,7 +19,7 @@ public class Customer extends Credentials {
     @Transient
     private Cart cart;
 
-    @OneToMany (mappedBy = "customer", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Order> orders = new ArrayList<>();
 
     public Customer() {
@@ -33,21 +33,18 @@ public class Customer extends Credentials {
         this.cart = cart;
     }
 
-    public Order makeOrder(){
+    public Order makeOrder() {
 
-        if (Objects.equals(this.getCart(), Cart.getEmptyCart())) throw new IllegalStateException(); //if cart is empty we can't create order
+        if (Objects.equals(this.getCart(), Cart.getEmptyCart()))
+            throw new IllegalStateException(); //if cart is empty we can't create order
 
         balance = balance.subtract(cart.getPrice()); //remove current cart price from balance before making order.
 
         Order newOrder = new Order(this);  //create new order
 
-        newOrder.setOrderId(id);        //set the orderID
-
         System.out.println(newOrder);
 
-       orders.add(newOrder);
-
-       this.setCart(Cart.getEmptyCart());       //empty cart after making order
+        this.setCart(Cart.getEmptyCart());       //empty cart after making order
 
         return newOrder;
     }
@@ -60,9 +57,6 @@ public class Customer extends Credentials {
         return id;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;
@@ -88,7 +82,8 @@ public class Customer extends Credentials {
         this.cart = cart;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -97,20 +92,22 @@ public class Customer extends Credentials {
             return false;
         Customer customer = (Customer) o;
         return id == customer.id && Objects.equals(name, customer.name) && Objects.equals(balance, customer.balance)
-            && Objects.equals(orders, customer.orders) && Objects.equals(cart, customer.cart);
+                && Objects.equals(orders, customer.orders) && Objects.equals(cart, customer.cart);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(super.hashCode(), id, name, balance, orders, cart);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "Customer{" +
-            "id=" + id +
-            ", name='" + name + '\'' +
-            ", balance=" + balance +
-            ", cart=" + cart +
-            '}';
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", balance=" + balance +
+                ", cart=" + cart +
+                '}';
     }
 
     public static class Builder {

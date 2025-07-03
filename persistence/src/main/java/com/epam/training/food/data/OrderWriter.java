@@ -12,15 +12,19 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.epam.training.food.domain.Order;
+import com.epam.training.food.domain.OrderDTO;
 import com.epam.training.food.domain.OrderItem;
+import com.epam.training.food.domain.OrderItemDTO;
 import org.springframework.stereotype.Component;
+
+import javax.transaction.Transactional;
 
 @Component
 public class OrderWriter {
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
-    public void writeOrdersToFile(List<Order> orders, Path outputPath) {
-        try (BufferedWriter writer = Files.newBufferedWriter(outputPath, StandardOpenOption.APPEND)){
+    public void writeOrdersToFile(List<OrderDTO> orders, Path outputPath) {
+        try (BufferedWriter writer = Files.newBufferedWriter(outputPath)){
             writer.write(addOrders(orders));
             writer.newLine();
         } catch (IOException e) {
@@ -28,20 +32,20 @@ public class OrderWriter {
         }
     }
 
-    private String addOrders(List<Order> orders) {
+    public String addOrders(List<OrderDTO> orders) {
         return orders
                 .stream()
                 .map(order -> addOrderItems(
-                        order.getOrderItems(),
-                        order.getPrice(),
-                        order.getTimestampCreated(),
-                        order.getOrderId(),
-                        order.getCustomer().getId()
+                        order.orderItemDTOList(),
+                        order.price(),
+                        order.timestampCreated(),
+                        order.orderId(),
+                        order.customerId()
                 ))
                 .collect(Collectors.joining("\n"));
     }
 
-    private String addOrderItems(List<OrderItem> orderItems, BigDecimal totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
+    private String addOrderItems(List<OrderItemDTO> orderItems, BigDecimal totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
         return orderItems
                 .stream()
                 .map(orderItem -> addOrderItem(
@@ -54,14 +58,14 @@ public class OrderWriter {
                 .collect(Collectors.joining("\n"));
     }
 
-    private String addOrderItem(OrderItem orderItem, BigDecimal totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
+    private String addOrderItem(OrderItemDTO orderItem, BigDecimal totalPrice, LocalDateTime timestampCreated, Long orderId, long customerId) {
         return String.join(
                 ",",
                 Long.toString(orderId),
                 Long.toString(customerId),
-                orderItem.getFood().getName(),
-                Integer.toString(orderItem.getPieces()),
-                orderItem.getPrice().toPlainString(),
+                orderItem.foodName(),
+                Integer.toString(orderItem.pieces()),
+                orderItem.price().toPlainString(),
                 timestampCreated.format(DATE_TIME_FORMATTER),
                 totalPrice.toPlainString());
     }

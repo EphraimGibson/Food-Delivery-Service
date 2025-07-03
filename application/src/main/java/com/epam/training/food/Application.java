@@ -29,11 +29,11 @@ public class Application implements CommandLineRunner {
     public void run(String... args) throws Exception {
         cliView = new CLIView();
 
-        if (loginAndVerifyUser()){
+        if (loginAndVerifyUser()) {
             shoppingState();
-            writer.writeOrdersToFile(defaultFoodDeliveryService.getAllOrders(), Path.of("./orders"));
-        }
-        else{
+
+            writer.writeOrdersToFile(defaultFoodDeliveryService.getALlOrdersDTO(), Path.of("./orders"));
+        } else {
             System.out.println("Authentication failed. Program terminating.");
         }
     }
@@ -42,7 +42,6 @@ public class Application implements CommandLineRunner {
     private void setDefaultFoodDeliveryService(DefaultFoodDeliveryService defaultFoodDeliveryService) {
         this.defaultFoodDeliveryService = defaultFoodDeliveryService;
     }
-
 
 
     private boolean loginAndVerifyUser() {
@@ -59,7 +58,7 @@ public class Application implements CommandLineRunner {
         }
     }
 
-    private void shoppingState(){
+    private void shoppingState() {
         boolean userWantsToContinueShopping = true;
 
 
@@ -92,10 +91,9 @@ public class Application implements CommandLineRunner {
             } else if (choice.equals("2")) {
                 validChoice = true;
                 userWantsToContinueShopping = false;
-                try{
+                try {
                     checkout();
-                }
-                catch (IllegalStateException e){
+                } catch (IllegalStateException e) {
                     System.out.println("Error while making Order: Cart is empty");
                     validChoice = false;
                 }
@@ -119,9 +117,9 @@ public class Application implements CommandLineRunner {
         }
     }
 
-    private void checkout(){
+    private void checkout() {
         Order order = defaultFoodDeliveryService.createOrder(customer);
-        cliView.printOrderCreatedStatement(order,customer.getBalance());
+        cliView.printOrderCreatedStatement(order, customer.getBalance());
     }
 
 }

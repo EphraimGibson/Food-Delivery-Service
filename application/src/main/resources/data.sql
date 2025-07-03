@@ -1,7 +1,7 @@
 INSERT INTO customer(id, user_name, password, name, balance) VALUES
     (1, 'Smith', 'SmithSecret', 'Josh Smith', 100),
     (2, 'Jane', 'JaneSecret', 'Jane Doe', 100),
-    (3, 'John', 'JohnSecret', 'John Doe 1', 10);
+    (3, 'John', 'JohnSecret', 'John Doe', 10);
 
 INSERT INTO food(id, name, description, calorie, price) VALUES
     (1, 'Fideua', 'Noodles gone wild in a seafood fiesta', 558, 15),

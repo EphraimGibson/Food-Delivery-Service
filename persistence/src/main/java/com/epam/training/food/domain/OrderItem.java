@@ -9,7 +9,7 @@ public class OrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name="order_Item_Id")
+    @Column(name = "order_Item_Id")
     private Long id;
 
     @OneToOne
@@ -52,7 +52,8 @@ public class OrderItem {
         this.price = price;
     }
 
-    @Override public boolean equals(Object o) {
+    @Override
+    public boolean equals(Object o) {
         if (this == o)
             return true;
         if (o == null || getClass() != o.getClass())
@@ -61,16 +62,18 @@ public class OrderItem {
         return pieces == orderItem.pieces && Objects.equals(food, orderItem.food) && Objects.equals(price, orderItem.price);
     }
 
-    @Override public int hashCode() {
+    @Override
+    public int hashCode() {
         return Objects.hash(food, pieces, price);
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return "OrderItem{" +
-            "food=" + food +
-            ", pieces=" + pieces +
-            ", price=" + price +
-            '}';
+                "food=" + food +
+                ", pieces=" + pieces +
+                ", price=" + price +
+                '}';
     }
 
     public static class Builder {
