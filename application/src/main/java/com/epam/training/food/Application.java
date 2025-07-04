@@ -3,7 +3,6 @@ package com.epam.training.food;
 import com.epam.training.food.data.OrderWriter;
 import com.epam.training.food.domain.Credentials;
 import com.epam.training.food.domain.Customer;
-import com.epam.training.food.repository.OrderRepository;
 import com.epam.training.food.service.LowBalanceException;
 import com.epam.training.food.domain.Order;
 import com.epam.training.food.service.AuthenticationException;
@@ -19,7 +18,7 @@ import java.util.Scanner;
 
 @Component
 public class Application implements CommandLineRunner {
-    private DefaultFoodDeliveryService defaultFoodDeliveryService;
+    private DefaultFoodDeliveryService foodDeliveryService;
     private final Scanner scanner = new Scanner(System.in);
     private final OrderWriter writer = new OrderWriter();
     CLIView cliView;
@@ -32,15 +31,15 @@ public class Application implements CommandLineRunner {
         if (loginAndVerifyUser()) {
             shoppingState();
 
-            writer.writeOrdersToFile(defaultFoodDeliveryService.getALlOrdersDTO(), Path.of("./orders"));
+            writer.writeOrdersToFile(foodDeliveryService.getALlOrdersDTO(), Path.of("./orders"));
         } else {
             System.out.println("Authentication failed. Program terminating.");
         }
     }
 
     @Autowired
-    private void setDefaultFoodDeliveryService(DefaultFoodDeliveryService defaultFoodDeliveryService) {
-        this.defaultFoodDeliveryService = defaultFoodDeliveryService;
+    private void setFoodDeliveryService(DefaultFoodDeliveryService foodDeliveryService) {
+        this.foodDeliveryService = foodDeliveryService;
     }
 
 
@@ -48,7 +47,7 @@ public class Application implements CommandLineRunner {
         Credentials credentials = cliView.readCredentials();
 
         try {
-            customer = defaultFoodDeliveryService.authenticate(credentials);
+            customer = foodDeliveryService.authenticate(credentials);
 
             cliView.printWelcomeMessage(customer);
             return true;
@@ -63,9 +62,9 @@ public class Application implements CommandLineRunner {
 
 
         while (userWantsToContinueShopping) {
-            cliView.printAllFoods(defaultFoodDeliveryService.listAllFood());
+            cliView.printAllFoods(foodDeliveryService.listAllFood());
 
-            FoodSelection foodSelection = cliView.readFoodSelection(defaultFoodDeliveryService.listAllFood());
+            FoodSelection foodSelection = cliView.readFoodSelection(foodDeliveryService.listAllFood());
 
             updateCart(foodSelection);
 
@@ -106,7 +105,7 @@ public class Application implements CommandLineRunner {
 
     private void updateCart(FoodSelection foodSelection) {
         try {
-            defaultFoodDeliveryService.updateCart(customer, foodSelection.food(), foodSelection.amount());
+            foodDeliveryService.updateCart(customer, foodSelection.food(), foodSelection.amount());
             cliView.printAddedToCart(foodSelection.food(), foodSelection.amount());
         } catch (LowBalanceException e) {
             System.out.println("Unable to add current order for" + foodSelection.food() +
@@ -118,7 +117,7 @@ public class Application implements CommandLineRunner {
     }
 
     private void checkout() {
-        Order order = defaultFoodDeliveryService.createOrder(customer);
+        Order order = foodDeliveryService.createOrder(customer);
         cliView.printOrderCreatedStatement(order, customer.getBalance());
     }
 
