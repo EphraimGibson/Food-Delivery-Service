@@ -38,13 +38,13 @@ public class Customer extends Credentials {
         if (Objects.equals(this.getCart(), Cart.getEmptyCart()))
             throw new IllegalStateException(); //if cart is empty we can't create order
 
-        balance = balance.subtract(cart.getPrice()); //remove current cart price from balance before making order.
-
-        Order newOrder = new Order(this);  //create new order
+        balance = balance.subtract(cart.getPrice());
+        Order newOrder = new Order(this);
 
         System.out.println(newOrder);
+        this.setCart(Cart.getEmptyCart());
 
-        this.setCart(Cart.getEmptyCart());       //empty cart after making order
+        orders.add(newOrder);
 
         return newOrder;
     }

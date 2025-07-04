@@ -10,6 +10,7 @@ import com.epam.training.food.repository.OrderRepository;
 import com.epam.training.food.utility.ShoppingStateUtility;
 import org.springframework.stereotype.Component;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -63,10 +64,29 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
     }
 
     @Override
+    @Transactional
     public Order createOrder(Customer customer) throws IllegalStateException {
-        Order newOrder = customer.makeOrder();
-        orderRepository.save(newOrder);
-        return newOrder;
+        Cart cart = customer.getCart();
+
+        Customer managedCustomer = customerRepository.findById(customer.getId())
+                .orElseThrow(() -> new EntityNotFoundException("Unable to find customer to place order"));
+
+        checkForEmptyCart(cart);
+        checkSufficientBalance(managedCustomer, cart);
+
+        return managedCustomer.makeOrder();
+    }
+
+    private static void checkSufficientBalance(Customer customer, Cart cart) {
+        if (customer.getBalance().compareTo(cart.getPrice()) >= 0) {
+            customer.setCart(cart);
+        } else {
+            throw new LowBalanceException("Balance to0 low to place order");
+        }
+    }
+
+    private static void checkForEmptyCart(Cart cart) {
+        if (cart.getOrderItems().isEmpty()) throw new IllegalStateException("Unable to place order! Cart is empty");
     }
 
     public List<Order> getAllOrders() {
@@ -84,4 +104,3 @@ public class DefaultFoodDeliveryService implements FoodDeliveryService {
                 }).collect(Collectors.toList());
     }
 }
-

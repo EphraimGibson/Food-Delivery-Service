@@ -53,7 +53,7 @@ public class ShoppingStateUtility {
         customer.getCart().getOrderItems().add(item);
     }
 
-    private void removeItemAndRefundBalance(Customer customer, int index) {
+    private void removeItem(Customer customer, int index) {
         customer.getCart().getOrderItems().remove(index);
     }
 
@@ -74,7 +74,7 @@ public class ShoppingStateUtility {
         if (item.getPieces() > 0) {
             updateItemAndAdjustBalance(customer, itemIndex, item);
         } else {
-            removeItemAndRefundBalance(customer, itemIndex);
+            removeItem(customer, itemIndex);
         }
     }
 
