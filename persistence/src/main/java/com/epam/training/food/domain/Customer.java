@@ -57,7 +57,6 @@ public class Customer extends Credentials {
         return id;
     }
 
-
     public String getName() {
         return name;
     }
